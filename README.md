@@ -15,11 +15,14 @@ Capture ideas, structure them with AI, track status through the pipeline (Idea â
 
 ## Quick Start
 
+Using [`uv`](https://github.com/astral-sh/uv):
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
+# Install dependencies and sync environment
+uv sync
+
+# Run the local server
+uv run uvicorn main:app --reload
 ```
 
 Open [http://localhost:8000](http://localhost:8000).
@@ -27,4 +30,3 @@ Open [http://localhost:8000](http://localhost:8000).
 ## Stack
 
 FastAPI + SQLite + SQLAlchemy + Jinja2 â€” no external AI APIs needed (heuristic structuring built-in; swap in Laya/Jev later).
-# idea-tracker
