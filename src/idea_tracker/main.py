@@ -15,6 +15,7 @@ from idea_tracker.web.routes.reviews import router as reviews_router
 from idea_tracker.web.routes.research import router as research_router
 from idea_tracker.web.routes.search import router as search_router
 from idea_tracker.web.routes.export import router as export_router
+from idea_tracker.web.routes.ui import router as ui_router
 
 logger = get_logger(__name__)
 
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
     app.include_router(research_router)
     app.include_router(search_router)
     app.include_router(export_router)
+    app.include_router(ui_router)
 
     return app
 

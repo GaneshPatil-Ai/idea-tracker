@@ -1,55 +1,519 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Idea Tracker</title>
-<link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Tracker</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --border-color: #495057;
+            --shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            display: inline;
+            font-size: 1.75rem;
+        }
+
+        .theme-toggle {
+            float: right;
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card h3 {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .idea-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .idea-card {
+            background: var(--bg-primary);
+            padding: 1.25rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .idea-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .idea-card .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .status-INBOX { background: #e3f2fd; color: #1976d2; }
+        .status-STRUCTURED { background: #f3e5f5; color: #7b1fa2; }
+        .status-EXPLORING { background: #fff3e0; color: #f57c00; }
+        .status-VALIDATING { background: #e8f5e9; color: #388e3c; }
+        .status-COMMITTED { background: #fce4ec; color: #c2185b; }
+        .status-BUILDING { background: #e0f2f1; color: #00796b; }
+        .status-LAUNCHED { background: #c8e6c9; color: #2e7d32; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>💡 Idea Tracker</h1>
-<p class="subtitle">Capture, structure, and execute on your ideas — local-first, open-source.</p>
+    <div class="header">
+        <div class="container">
+            <h1>💡 Idea Tracker</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+        </div>
+    </div>
 
-<h2>Add Idea</h2>
-<form method="POST" action="/ideas/">
-  <label for="title">Title</label>
-  <input id="title" name="title" required placeholder="e.g. Build a habit tracker for developers">
-  <label for="description">Description (optional)</label>
-  <textarea id="description" name="description" placeholder="What's the idea about?"></textarea>
-  <button type="submit">Add Idea</button>
-</form>
+    <div class="container">
+        <!-- Dashboard Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Ideas</h3>
+                <div class="value" id="total-ideas">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>In Progress</h3>
+                <div class="value" id="in-progress">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Stale Ideas</h3>
+                <div class="value" id="stale-ideas">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Decisions Made</h3>
+                <div class="value" id="total-decisions">0</div>
+            </div>
+        </div>
 
-<h2>Ideas</h2>
-<div class="filter">
-  {% for s in ['all'] + statuses %}
-  <a href="/?status={{ s }}" class="{{ 'active' if status == s else '' }}">{{ s | title }}</a>
-  {% endfor %}
-</div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('ideas')">Ideas</button>
+            <button class="tab" onclick="switchTab('search')">Search</button>
+            <button class="tab" onclick="switchTab('milestones')">Milestones</button>
+            <button class="tab" onclick="switchTab('research')">Research</button>
+            <button class="tab" onclick="switchTab('export')">Export</button>
+        </div>
 
-{% for idea in ideas %}
-<div class="idea-card">
-  <h3>{{ idea.title }}</h3>
-  {% if idea.description %}<p>{{ idea.description }}</p>{% endif %}
-  {% if idea.problem %}<p><strong>Problem:</strong> {{ idea.problem }}</p>{% endif %}
-  {% if idea.opportunity %}<p><strong>Opportunity:</strong> {{ idea.opportunity }}</p>{% endif %}
-  {% if idea.next_action %}<p><strong>Next:</strong> {{ idea.next_action }}</p>{% endif %}
-  <span class="status status-{{ idea.status }}">{{ idea.status }}</span>
-  <div class="meta">Created {{ idea.created_at.strftime('%Y-%m-%d') }}</div>
-  <div class="actions">
-    <form method="POST" action="/ideas/{{ idea.id }}/status" style="display:inline;">
-      <select name="status" onchange="this.form.submit()">
-        {% for s in statuses %}
-        <option value="{{ s }}" {{ 'selected' if idea.status == s else '' }}>{{ s }}</option>
-        {% endfor %}
-      </select>
-    </form>
-    <form method="POST" action="/ideas/{{ idea.id }}/structure" style="display:inline;">
-      <button type="submit">Structure with AI</button>
-    </form>
-  </div>
-</div>
-{% else %}
-<p>No ideas yet. Add one above!</p>
-{% endfor %}
+        <!-- Ideas Tab -->
+        <div id="ideas-tab" class="tab-content">
+            <div class="card">
+                <button class="btn btn-primary" onclick="showCreateModal()">+ New Idea</button>
+            </div>
+
+            <div class="search-box">
+                <input type="text" placeholder="Search ideas..." id="search-input" onkeyup="searchIdeas()">
+            </div>
+
+            <div class="idea-list" id="idea-list">
+                <!-- Ideas loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="search-tab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2>Advanced Search</h2>
+                <div class="form-group">
+                    <input type="text" id="search-query" placeholder="Enter search term...">
+                </div>
+                <div class="form-group">
+                    <select id="search-type">
+                        <option value="hybrid">Hybrid Search</option>
+                        <option value="keyword">Keyword</option>
+                        <option value="full_text">Full Text</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="performSearch()">Search</button>
+            </div>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- Milestones Tab -->
+        <div id="milestones-tab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2>Milestones & Tasks</h2>
+                <p>Select an idea to view its milestones and tasks.</p>
+            </div>
+        </div>
+
+        <!-- Research Tab -->
+        <div id="research-tab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2>Research Evidence</h2>
+                <p>Track research evidence and questions for your ideas.</p>
+            </div>
+        </div>
+
+        <!-- Export Tab -->
+        <div id="export-tab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2>Export Data</h2>
+                <p>Export your ideas in JSON or Markdown format.</p>
+                <button class="btn btn-primary" onclick="exportData('json')">Export as JSON</button>
+                <button class="btn btn-secondary" onclick="exportData('markdown')">Export as Markdown</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Idea Modal -->
+    <div id="create-modal" class="modal">
+        <div class="modal-content">
+            <h2>Create New Idea</h2>
+            <form id="create-form" onsubmit="createIdea(event)">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="idea-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="idea-description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="idea-tags" placeholder="ai, web, mobile">
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? '' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').textContent = isDark ? '🌙 Dark' : '☀️ Light';
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.querySelector('.theme-toggle').textContent = '☀️ Light';
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // Modal management
+        function showCreateModal() {
+            document.getElementById('create-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(el => el.classList.remove('active'));
+        }
+
+        // API calls
+        async function loadIdeas() {
+            const response = await fetch('/ideas');
+            const ideas = await response.json();
+            displayIdeas(ideas);
+            updateStats(ideas);
+        }
+
+        function displayIdeas(ideas) {
+            const container = document.getElementById('idea-list');
+            container.innerHTML = ideas.map(idea => `
+                <div class="idea-card" onclick="viewIdea(${idea.id})">
+                    <h3>${idea.title}</h3>
+                    <p>${idea.raw_description.substring(0, 150)}...</p>
+                    <span class="status status-${idea.status}">${idea.status}</span>
+                    ${idea.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+            `).join('');
+        }
+
+        function updateStats(ideas) {
+            document.getElementById('total-ideas').textContent = ideas.length;
+            document.getElementById('in-progress').textContent = ideas.filter(i =>
+                ['EXPLORING', 'VALIDATING', 'BUILDING'].includes(i.status)
+            ).length;
+        }
+
+        async function createIdea(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('idea-title').value;
+            const description = document.getElementById('idea-description').value;
+            const tags = document.getElementById('idea-tags').value.split(',').map(t => t.trim()).filter(t => t);
+
+            const response = await fetch('/ideas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, raw_description: description, tags })
+            });
+
+            if (response.ok) {
+                closeModal();
+                loadIdeas();
+                document.getElementById('create-form').reset();
+            }
+        }
+
+        function searchIdeas() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            // Simple client-side filtering (could be enhanced with server search)
+            const cards = document.querySelectorAll('.idea-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('search-query').value;
+            const type = document.getElementById('search-type').value;
+
+            const response = await fetch(`/search/ideas?q=${encodeURIComponent(query)}&search_type=${type}`);
+            const data = await response.json();
+
+            const container = document.getElementById('search-results');
+            container.innerHTML = data.results.map(idea => `
+                <div class="idea-card" onclick="viewIdea(${idea.id})">
+                    <h3>${idea.title}</h3>
+                    <span class="status status-${idea.status}">${idea.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function exportData(format) {
+            window.location.href = `/export/ideas?format=${format}`;
+        }
+
+        function viewIdea(id) {
+            window.location.href = `/ideas/${id}`;
+        }
+
+        // Initialize
+        loadIdeas();
+    </script>
 </body>
 </html>
