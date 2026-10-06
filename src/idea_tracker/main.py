@@ -11,6 +11,10 @@ from idea_tracker.config.settings import settings
 from idea_tracker.domain.exceptions import IdeaTrackerError
 from idea_tracker.infrastructure.persistence.database import init_db
 from idea_tracker.web.routes.health import router as health_router
+from idea_tracker.web.routes.reviews import router as reviews_router
+from idea_tracker.web.routes.research import router as research_router
+from idea_tracker.web.routes.search import router as search_router
+from idea_tracker.web.routes.export import router as export_router
 
 logger = get_logger(__name__)
 
@@ -50,6 +54,10 @@ def create_app() -> FastAPI:
 
     # Register Routers
     app.include_router(health_router, tags=["System"])
+    app.include_router(reviews_router)
+    app.include_router(research_router)
+    app.include_router(search_router)
+    app.include_router(export_router)
 
     return app
 

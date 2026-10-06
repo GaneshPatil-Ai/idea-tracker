@@ -51,3 +51,6 @@ class Idea(Base):
     tags = relationship("Tag", secondary="idea_tags", back_populates="ideas")
     notes = relationship("Note", back_populates="idea", cascade="all, delete-orphan")
     events = relationship("ActivityEvent", back_populates="idea", cascade="all, delete-orphan")
+    decisions = relationship("Decision", back_populates="idea", cascade="all, delete-orphan")
+    research_evidence = relationship("ResearchEvidence", back_populates="idea", cascade="all, delete-orphan")
+    research_questions = relationship("ResearchQuestion", back_populates="idea", cascade="all, delete-orphan")

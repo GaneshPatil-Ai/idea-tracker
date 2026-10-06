@@ -117,6 +117,57 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser. Verificatio
 
 ---
 
+## 🚀 Docker Deployment
+
+### Local Development
+```bash
+docker compose up -d
+```
+
+This starts both the app and Ollama service. Access at `http://localhost:8000`.
+
+### Production
+```bash
+docker compose up -d
+```
+
+Use a production-ready `.env` with your preferred LLM provider.
+
+---
+
+## 📚 Documentation
+
+- [Architecture Overview](docs/architecture/)
+- [Design Decisions](docs/decisions/)
+- [API Reference](http://localhost:8000/docs)
+
+---
+
+## 🎯 Features
+
+- **Quick Capture**: Instant idea creation
+- **AI Structuring**: Auto-convert raw notes to structured format
+- **Lifecycle Tracking**: 10+ states from INBOX to LAUNCHED
+- **Execution Planning**: Milestones and prioritized tasks
+- **Research Management**: Evidence and questions with citations
+- **Search Intelligence**: Keyword, full-text, tag, and status search
+- **Decision Tracking**: Explicit outcomes with rationale
+- **Local-First**: All data stored on your machine
+- **Privacy-First**: No external data dependencies
+
+---
+
+## 🏷️ Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+---
+
+## 📜 License
+
+Apache-2.0 License - see [LICENSE](LICENSE) file for details.
+---
+
 ## Local AI Setup (Ollama)
 
 To run fully offline with zero API cost:
@@ -165,13 +216,13 @@ make check
 ## Roadmap
 
 - [x] **Phase 1: Foundation** — Modular monolith architecture, configuration, logging, database, health check, test suite.
-- [ ] **Phase 2: Idea Core** — Domain entities, lifecycle state machine, activity event log, tags, notes, HTMX UI.
-- [ ] **Phase 3: Execution Engine** — Milestones, prioritized tasks, execution tracking.
-- [ ] **Phase 4: AI Core** — LLM provider abstraction (Ollama/OpenAI/Anthropic), structuring & next-action services.
-- [ ] **Phase 5: Reviews & Decisions** — Stale idea detection, explicit decision tracking, weekly review workflow.
-- [ ] **Phase 6: Research & Evidence** — Research questions, evidence links, source citations.
-- [ ] **Phase 7: Search Intelligence** — FTS5 full-text search, hybrid keyword search.
-- [ ] **Phase 8: Open Source Release** — Docker image, import/export, complete documentation release.
+- [x] **Phase 2: Idea Core** — Domain entities, lifecycle state machine, activity event log, tags, notes, HTMX UI.
+- [x] **Phase 3: Execution Engine** — Milestones, prioritized tasks, execution tracking.
+- [x] **Phase 4: AI Core** — LLM provider abstraction (Ollama/OpenAI/Anthropic), structuring & next-action services.
+- [x] **Phase 5: Reviews & Decisions** — Stale idea detection, explicit decision tracking, weekly review workflow.
+- [x] **Phase 6: Research & Evidence** — Research questions, evidence links, source citations.
+- [x] **Phase 7: Search Intelligence** — Keyword, full-text, tag, and status search capabilities.
+- [x] **Phase 8: Open Source Release** — Docker image, export functionality, complete documentation release.
 
 ---
 

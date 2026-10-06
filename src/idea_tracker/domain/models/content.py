@@ -1,6 +1,6 @@
 """Domain models for Tags and Notes."""
 
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
@@ -30,11 +30,11 @@ class Note(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     idea_id = Column(Integer, ForeignKey("ideas.id"), nullable=False)
     content = Column(String(2000), nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
 
