@@ -17,6 +17,6 @@ class ActivityEvent(Base):
     actor = Column(String(50), default="system")
     timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     # Stored as serialized JSON string
-    metadata = Column(String(2000), nullable=True)
+    event_metadata = Column(String(2000), nullable=True)
 
     idea = relationship("Idea", back_populates="events")
