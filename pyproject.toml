@@ -1,24 +1,82 @@
 [project]
 name = "idea-tracker"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local-first idea capture → execution system. Turn vague ideas into structured opportunities, validate them, and execute."
 authors = [
-    { name = "GaneshPatil-Ai", email = "ppatilganesh533@gmail.com" }
+    { name = "GaneshPatil-Ai", email = "ppatilganesh533@gmail.com" },
 ]
+readme = "README.md"
+license = { text = "Apache-2.0" }
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.142.2",
+    "fastapi>=0.115.0",
     "httpx>=0.28.1",
     "jinja2>=3.1.6",
-    "pydantic>=2.13.5",
-    "python-multipart>=0.0.32",
-    "sqlalchemy>=2.1.3",
-    "uvicorn>=0.54.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "python-multipart>=0.0.20",
+    "sqlalchemy>=2.0.36",
+    "alembic>=1.14.0",
+    "uvicorn[standard]>=0.34.0",
+    "structlog>=24.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.28.1",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.0",
+    "coverage>=7.6.0",
 ]
 
 [project.scripts]
-idea-tracker = "idea_tracker:main"
+idea-tracker = "idea_tracker.main:cli_main"
 
 [build-system]
-requires = ["uv_build>=0.12.19,<0.13.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/idea_tracker"]
+
+[tool.ruff]
+target-version = "py312"
+src = ["src", "tests"]
+line-length = 99
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "T20",  # flake8-print
+    "RUF",  # ruff-specific rules
+]
+ignore = [
+    "E501",   # line length handled by formatter
+    "B008",   # function call in argument defaults (FastAPI Depends)
+    "UP042",  # str+Enum vs StrEnum inheritance
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["idea_tracker"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+mypy_path = "src"

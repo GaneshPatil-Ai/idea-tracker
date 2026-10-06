@@ -1,32 +1,186 @@
 # Idea Tracker
 
-**Local-first, open-source idea capture → execution system.**
+**An open-source, local-first system for turning vague ideas into structured, validated execution.**
 
-Capture ideas, structure them with AI, track status through the pipeline (Idea → Research → Validate → Build → Paused/Killed → Done), and never let a good idea slip away.
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
+
+---
+
+## What is this?
+
+Idea Tracker is a local-first application designed to help ambitious developers, founders, and creators systematically turn ideas into outcomes.
+
+Most idea notebooks become graveyards of half-baked thoughts. Idea Tracker changes the core loop:
+
+```text
+CAPTURE → STRUCTURE → UNDERSTAND → VALIDATE → DECIDE → EXECUTE → REVIEW → LEARN
+```
+
+Instead of another passive note-taking app, Idea Tracker asks the central question:
+
+> **"What should I do with this idea next?"**
+
+---
+
+## Why does it exist?
+
+1. **Ideas need evidence, not hype** — AI shouldn't make decisions for you; it should extract risks, assumptions, and suggest smallest next actions grounded in evidence.
+2. **Local-first privacy** — Your product ideas, strategic notes, and validation data belong on your machine in standard formats (SQLite/JSON/Markdown).
+3. **Execution-focused** — A great idea without explicit decisions and milestones is just a distraction.
+
+---
+
+## Core Philosophy
+
+- **Human makes the final decision** — AI assists reasoning and structures raw input, but never silently alters state or makes commitments.
+- **Traceability** — Every assessment, risk score, or decision traces back to explicit evidence or is marked `UNVERIFIED`.
+- **Modular Monolith** — Simple single-process application with clean layer separation. No microservices, no mandatory cloud dependencies.
+- **Replaceable AI Providers** — Works out-of-the-box with local LLMs (Ollama) or external APIs (OpenAI, Anthropic) via a provider abstraction.
+
+---
+
+## Architecture
+
+Idea Tracker follows a clean **Modular Monolith** architecture:
+
+```text
+┌─────────────────────────────────────────┐
+│        Web Layer (FastAPI + HTMX)       │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│      Application Layer (Use Cases)      │
+└────────────────────┬────────────────────┘
+                     │
+┌────────────────────▼────────────────────┐
+│          Domain Layer (Entities)        │
+└────────────────────▲────────────────────┘
+                     │
+┌────────────────────┴────────────────────┐
+│     Infrastructure Layer (Adapters)     │
+│   (SQLite / Ollama / OpenAI / Anthropic)│
+└─────────────────────────────────────────┘
+```
+
+For detailed architecture diagrams and design records, see [`docs/architecture/`](docs/architecture/) and [`docs/decisions/`](docs/decisions/).
+
+---
 
 ## Features
 
-- **Capture** — add ideas with title + description
-- **Structure** — AI converts vague ideas into problem + opportunity statements
-- **Pipeline** — track status: Idea → Research → Validate → Build → Paused/Killed → Done
-- **Filter** — browse by status
-- **Local-first** — SQLite, runs entirely offline
-- **Open-source** — Apache-2.0
+- ⚡ **Quick Capture** — Instantly capture ideas in seconds without mandatory structured fields.
+- 🤖 **AI Structuring** — Automatically convert raw notes into problem statements, target user profiles, opportunities, assumptions, and risks.
+- 📋 **Lifecycle Tracking** — Track ideas across clear states (`INBOX` → `STRUCTURED` → `EXPLORING` → `VALIDATING` → `COMMITTED` → `BUILDING` → `LAUNCHED` / `PAUSED` / `KILLED`).
+- 📜 **Append-only Activity Log** — Immutable history of every state change, AI run, task completion, and decision.
+- 🎯 **Execution Planning** — Break down ideas into milestones and prioritized, actionable tasks.
+- 🔍 **Local Search** — SQLite FTS5 full-text search across titles, descriptions, notes, and tags.
+- 🔄 **Review Engine** — Detect forgotten, stale, or blocked ideas and guide weekly review workflows.
+
+---
 
 ## Quick Start
 
-Using [`uv`](https://github.com/astral-sh/uv):
+### Prerequisites
+
+- Python 3.12+
+- [`uv`](https://github.com/astral-sh/uv) (recommended Python package manager)
+
+### 1. Clone & Setup
 
 ```bash
-# Install dependencies and sync environment
-uv sync
+git clone https://github.com/GaneshPatil-Ai/littleMore.git
+cd littleMore/idea-tracker
 
-# Run the local server
-uv run uvicorn main:app --reload
+# Install dependencies and setup virtual environment
+uv sync --extra dev
 ```
 
-Open [http://localhost:8000](http://localhost:8000).
+### 2. Configure Environment
 
-## Stack
+```bash
+cp .env.example .env
+```
 
-FastAPI + SQLite + SQLAlchemy + Jinja2 — no external AI APIs needed (heuristic structuring built-in; swap in Laya/Jev later).
+*(Defaults work out-of-the-box for local SQLite and Ollama).*
+
+### 3. Run Application
+
+```bash
+make dev
+# or
+uv run uvicorn idea_tracker.main:app --reload
+```
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser. Verification endpoint: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health).
+
+---
+
+## Local AI Setup (Ollama)
+
+To run fully offline with zero API cost:
+
+1. Install [Ollama](https://ollama.ai/)
+2. Pull a local model:
+   ```bash
+   ollama pull llama3.2
+   ```
+3. Set your `.env`:
+   ```ini
+   LLM_PROVIDER=ollama
+   LLM_MODEL=llama3.2
+   OLLAMA_BASE_URL=http://localhost:11434
+   ```
+
+---
+
+## Docker Setup
+
+Run using Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+---
+
+## Development & Testing
+
+We enforce strict quality controls with `pytest`, `ruff`, and `mypy`.
+
+```bash
+# Run test suite
+make test
+
+# Run linter & type checker
+make lint
+
+# Run all checks (lint + test)
+make check
+```
+
+---
+
+## Roadmap
+
+- [x] **Phase 1: Foundation** — Modular monolith architecture, configuration, logging, database, health check, test suite.
+- [ ] **Phase 2: Idea Core** — Domain entities, lifecycle state machine, activity event log, tags, notes, HTMX UI.
+- [ ] **Phase 3: Execution Engine** — Milestones, prioritized tasks, execution tracking.
+- [ ] **Phase 4: AI Core** — LLM provider abstraction (Ollama/OpenAI/Anthropic), structuring & next-action services.
+- [ ] **Phase 5: Reviews & Decisions** — Stale idea detection, explicit decision tracking, weekly review workflow.
+- [ ] **Phase 6: Research & Evidence** — Research questions, evidence links, source citations.
+- [ ] **Phase 7: Search Intelligence** — FTS5 full-text search, hybrid keyword search.
+- [ ] **Phase 8: Open Source Release** — Docker image, import/export, complete documentation release.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+---
+
+## License
+
+This project is licensed under the Apache-2.0 License - see the [`LICENSE`](LICENSE) file for details.
