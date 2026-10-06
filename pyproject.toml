@@ -1,0 +1,24 @@
+[project]
+name = "idea-tracker"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "GaneshPatil-Ai", email = "ppatilganesh533@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142.2",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
+    "pydantic>=2.13.5",
+    "python-multipart>=0.0.32",
+    "sqlalchemy>=2.1.3",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+idea-tracker = "idea_tracker:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"

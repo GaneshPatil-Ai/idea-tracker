@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.db
+*.sqlite
+.env
+uvicorn
+.venv/
+*.db
+*.sqlite
+__pycache__/
+.env
+dist/
+*.egg-info/

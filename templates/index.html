@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idea Tracker</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<h1>💡 Idea Tracker</h1>
+<p class="subtitle">Capture, structure, and execute on your ideas — local-first, open-source.</p>
+
+<h2>Add Idea</h2>
+<form method="POST" action="/ideas/">
+  <label for="title">Title</label>
+  <input id="title" name="title" required placeholder="e.g. Build a habit tracker for developers">
+  <label for="description">Description (optional)</label>
+  <textarea id="description" name="description" placeholder="What's the idea about?"></textarea>
+  <button type="submit">Add Idea</button>
+</form>
+
+<h2>Ideas</h2>
+<div class="filter">
+  {% for s in ['all'] + statuses %}
+  <a href="/?status={{ s }}" class="{{ 'active' if status == s else '' }}">{{ s | title }}</a>
+  {% endfor %}
+</div>
+
+{% for idea in ideas %}
+<div class="idea-card">
+  <h3>{{ idea.title }}</h3>
+  {% if idea.description %}<p>{{ idea.description }}</p>{% endif %}
+  {% if idea.problem %}<p><strong>Problem:</strong> {{ idea.problem }}</p>{% endif %}
+  {% if idea.opportunity %}<p><strong>Opportunity:</strong> {{ idea.opportunity }}</p>{% endif %}
+  {% if idea.next_action %}<p><strong>Next:</strong> {{ idea.next_action }}</p>{% endif %}
+  <span class="status status-{{ idea.status }}">{{ idea.status }}</span>
+  <div class="meta">Created {{ idea.created_at.strftime('%Y-%m-%d') }}</div>
+  <div class="actions">
+    <form method="POST" action="/ideas/{{ idea.id }}/status" style="display:inline;">
+      <select name="status" onchange="this.form.submit()">
+        {% for s in statuses %}
+        <option value="{{ s }}" {{ 'selected' if idea.status == s else '' }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    <form method="POST" action="/ideas/{{ idea.id }}/structure" style="display:inline;">
+      <button type="submit">Structure with AI</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<p>No ideas yet. Add one above!</p>
+{% endfor %}
+</body>
+</html>
