@@ -27,3 +27,4 @@ Open [http://localhost:8000](http://localhost:8000).
 ## Stack
 
 FastAPI + SQLite + SQLAlchemy + Jinja2 — no external AI APIs needed (heuristic structuring built-in; swap in Laya/Jev later).
+# idea-tracker
