@@ -1,11 +1,12 @@
 import streamlit as st
-from typing import List, Dict
 import requests
+from typing import Dict, List
+
 from streamlit import cache_data
 
 API_BASE_URL = "http://127.0.0.1:8000"
 
-@cache_data(ttl=30, show_spinner="Loading ideas...")
+@st.cache_data(ttl=30, show_spinner="Loading ideas...")
 def load_ideas() -> List[Dict]:
     """Load ideas from API with caching."""
     try:
@@ -16,8 +17,7 @@ def load_ideas() -> List[Dict]:
         st.error("Failed to load ideas")
     return []
 
-@st.fragment
-def dashboard_fragment():
+def dashboard():
     st.title("💡 Idea Tracker Dashboard")
     st.markdown("Local-first idea capture → execution system")
 
@@ -60,6 +60,3 @@ def dashboard_fragment():
                     st.write(f"{status_icon} {idea['status']}")
     else:
         st.info("No ideas yet. Create one to get started!")
-
-# Render the fragment
-st.fragment(dashboard_fragment)
