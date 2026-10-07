@@ -2,22 +2,24 @@
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from idea_tracker.config.logging import configure_logging, get_logger
 from idea_tracker.config.settings import settings
-from idea_tracker.domain.exceptions import IdeaTrackerError
 from idea_tracker.infrastructure.persistence.database import init_db
 from idea_tracker.web.routes.health import router as health_router
 from idea_tracker.web.routes.reviews import router as reviews_router
 from idea_tracker.web.routes.research import router as research_router
 from idea_tracker.web.routes.search import router as search_router
 from idea_tracker.web.routes.export import router as export_router
-from idea_tracker.web.routes.ui import router as ui_router
 
 logger = get_logger(__name__)
+
+# Get the base directory
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 @asynccontextmanager
@@ -44,14 +46,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Global Exception Handlers
-    @app.exception_handler(IdeaTrackerError)
-    async def domain_exception_handler(request: Request, exc: IdeaTrackerError) -> JSONResponse:
-        logger.warning("Domain exception occurred", error=str(exc), path=request.url.path)
-        return JSONResponse(
-            status_code=400,
-            content={"error": exc.__class__.__name__, "message": exc.message},
-        )
+    # Mount static files
+    static_dir = BASE_DIR / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
     # Register Routers
     app.include_router(health_router, tags=["System"])
@@ -59,7 +57,6 @@ def create_app() -> FastAPI:
     app.include_router(research_router)
     app.include_router(search_router)
     app.include_router(export_router)
-    app.include_router(ui_router)
 
     return app
 

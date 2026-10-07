@@ -433,7 +433,7 @@
 
         // API calls
         async function loadIdeas() {
-            const response = await fetch('/ideas');
+            const response = await fetch('/api/api/ideas');
             const ideas = await response.json();
             displayIdeas(ideas);
             updateStats(ideas);
@@ -465,7 +465,7 @@
             const description = document.getElementById('idea-description').value;
             const tags = document.getElementById('idea-tags').value.split(',').map(t => t.trim()).filter(t => t);
 
-            const response = await fetch('/ideas', {
+            const response = await fetch('/api/ideas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, raw_description: description, tags })
@@ -492,7 +492,7 @@
             const query = document.getElementById('search-query').value;
             const type = document.getElementById('search-type').value;
 
-            const response = await fetch(`/search/ideas?q=${encodeURIComponent(query)}&search_type=${type}`);
+            const response = await fetch(`/search/api/ideas?q=${encodeURIComponent(query)}&search_type=${type}`);
             const data = await response.json();
 
             const container = document.getElementById('search-results');
@@ -505,11 +505,11 @@
         }
 
         function exportData(format) {
-            window.location.href = `/export/ideas?format=${format}`;
+            window.location.href = `/export/api/ideas?format=${format}`;
         }
 
         function viewIdea(id) {
-            window.location.href = `/ideas/${id}`;
+            window.location.href = `/api/ideas/${id}`;
         }
 
         // Initialize

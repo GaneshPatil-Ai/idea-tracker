@@ -22,7 +22,7 @@ The differentiating flow: **Idea → Evidence → Decision → Execution → Out
 
 ```
 ┌─────────────────────────┐
-│    Web / API Layer      │  FastAPI routes, Jinja2 templates, HTMX
+│    Web / API Layer      │  FastAPI routes, Streamlit frontend + FastAPI backend
 │    (Presentation)       │
 └────────────┬────────────┘
              │ depends on
@@ -137,7 +137,7 @@ src/idea_tracker/
 A typical request follows this path:
 
 ```
-Browser (HTMX request)
+Browser (Streamlit + API request)
     │
     ▼
 FastAPI Route (web layer)
@@ -157,7 +157,7 @@ Application Service (use case orchestration)
     └──▶ Activity Event (append-only history)
     │
     ▼
-Jinja2 Template (HTML response or HTMX partial)
+Streamlit Page (UI) + FastAPI Route (API)
 ```
 
 ## Configuration

@@ -43,6 +43,8 @@ Instead of another passive note-taking app, Idea Tracker asks the central questi
 
 ## Architecture
 
+**Note:** The codebase includes both FastAPI (backend) and Streamlit (frontend) implementations. The README describes the original FastAPI+HTMX design; the `idea-tracker/pages/` directory and `app.py` provide a Streamlit UI layer.
+
 Idea Tracker follows a clean **Modular Monolith** architecture:
 
 ```text

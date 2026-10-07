@@ -198,7 +198,7 @@
 
         // Load idea details
         async function loadIdea() {
-            const response = await fetch(`/ideas/${ideaId}`);
+            const response = await fetch(`/api/ideas/${ideaId}`);
             const idea = await response.json();
 
             document.getElementById('idea-title').textContent = idea.title;
@@ -209,7 +209,7 @@
 
         // Load milestones
         async function loadMilestones() {
-            const response = await fetch(`/ideas/${ideaId}/milestones`);
+            const response = await fetch(`/api/ideas/${ideaId}/milestones`);
             const data = await response.json();
 
             document.getElementById('milestone-count').textContent = data.milestones.length;
@@ -223,7 +223,7 @@
 
         // Load decisions
         async function loadDecisions() {
-            const response = await fetch(`/ideas/${ideaId}/decisions`);
+            const response = await fetch(`/api/ideas/${ideaId}/decisions`);
             const data = await response.json();
 
             document.getElementById('decision-count').textContent = data.decisions.length;
@@ -238,7 +238,7 @@
 
         // Load research evidence
         async function loadResearch() {
-            const response = await fetch(`/ideas/${ideaId}/evidence`);
+            const response = await fetch(`/api/ideas/${ideaId}/evidence`);
             const data = await response.json();
 
             document.getElementById('research-count').textContent = data.evidence.length;
@@ -255,7 +255,7 @@
         function updateStatus() {
             const status = prompt('Enter new status (INBOX, EXPLORING, VALIDATING, COMMITTED, BUILDING, LAUNCHED):');
             if (status) {
-                fetch(`/ideas/${ideaId}/status`, {
+                fetch(`/api/ideas/${ideaId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status })
@@ -269,7 +269,7 @@
             const rationale = prompt('Rationale:');
 
             if (title && outcome && rationale) {
-                fetch(`/ideas/${ideaId}/decisions`, {
+                fetch(`/api/ideas/${ideaId}/decisions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, outcome, rationale })
@@ -281,13 +281,13 @@
         }
 
         function exportIdea() {
-            window.location.href = `/export/ideas/${ideaId}?format=json`;
+            window.location.href = `/export/api/ideas/${ideaId}?format=json`;
         }
 
         function addMilestone() {
             const title = prompt('Milestone title:');
             if (title) {
-                fetch(`/ideas/${ideaId}/milestones`, {
+                fetch(`/api/ideas/${ideaId}/milestones`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title })
@@ -301,7 +301,7 @@
             const type = prompt('Type (ARTICLE, VIDEO, PODCAST, DOCUMENT):');
 
             if (title && url && type) {
-                fetch(`/ideas/${ideaId}/evidence`, {
+                fetch(`/api/ideas/${ideaId}/evidence`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, url, evidence_type: type })
