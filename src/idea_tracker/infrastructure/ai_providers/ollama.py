@@ -7,16 +7,16 @@ from typing import Any
 from .base import AIProvider
 
 
-STRUCTURE_PROMPT = """You are an idea analyst. Given a raw idea, extract and return ONLY a valid JSON object with these fields:
+STRUCTURE_PROMPT_TEMPLATE = """You are an idea analyst. Given a raw idea, extract and return ONLY a valid JSON object with these fields:
 {
-  "problem_statement": "clear 1-2 sentence problem this solves",
-  "target_users": ["user type 1", "user type 2"],
-  "opportunities": ["opportunity 1", "opportunity 2"],
-  "risks": ["risk 1", "risk 2"],
-  "assumptions": ["assumption 1", "assumption 2"]
+  \"problem_statement\": \"clear 1-2 sentence problem this solves\",
+  \"target_users\": [\"user type 1\", \"user type 2\"],
+  \"opportunities\": [\"opportunity 1\", \"opportunity 2\"],
+  \"risks\": [\"risk 1\", \"risk 2\"],
+  \"assumptions\": [\"assumption 1\", \"assumption 2\"]
 }
 
-Raw Idea: {raw_text}
+Raw Idea: PLACEHOLDER_RAW_TEXT
 
 Return ONLY the JSON object, no explanation."""
 
@@ -56,7 +56,7 @@ class OllamaProvider(AIProvider):
 
     async def structure_idea(self, raw_text: str) -> dict:
         """Structure a raw idea into problem statement, risks, opportunities, etc."""
-        content = await self._chat(STRUCTURE_PROMPT.format(raw_text=raw_text))
+        content = await self._chat(STRUCTURE_PROMPT_TEMPLATE.replace("PLACEHOLDER_RAW_TEXT", raw_text))
         return self._extract_json(content, default={
             "problem_statement": raw_text[:200],
             "target_users": [],
