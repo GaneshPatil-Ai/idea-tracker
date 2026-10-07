@@ -17,9 +17,9 @@ class IdeaService:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def create_idea(self, title: str, raw_description: str, source: SourceEnum = SourceEnum.MANUAL) -> Idea:
+    def create_idea(self, title: str, description: str, source: SourceEnum = SourceEnum.MANUAL) -> Idea:
         """Create a new idea and record the creation event."""
-        idea = Idea(title=title, raw_description=raw_description, source=source, status=StatusEnum.INBOX)
+        idea = Idea(title=title, description=description, status=StatusEnum.INBOX)
         self.db.add(idea)
         self.db.commit()
         self.db.refresh(idea)

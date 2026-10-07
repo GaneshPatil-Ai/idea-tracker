@@ -89,7 +89,7 @@ class ExportService:
             "id": idea.id,
             "title": idea.title,
             "status": idea.status.value,
-            "raw_description": idea.raw_description,
+            "description": idea.description,
             "structured_description": idea.structured_description,
             "source": idea.source.value,
             "created_at": idea.created_at.isoformat(),

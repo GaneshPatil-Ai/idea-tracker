@@ -12,7 +12,8 @@ def load_ideas() -> List[Dict]:
     try:
         response = requests.get(f"{API_BASE_URL}/api/ideas")
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            return data.get("ideas", []) if isinstance(data, dict) else data
     except Exception:
         st.error("Failed to load ideas")
     return []
@@ -45,7 +46,7 @@ def dashboard():
                 col1, col2 = st.columns([3, 1])
                 with col1:
                     st.subheader(idea["title"])
-                    st.write(idea["raw_description"][:200] + "...")
+                    st.write(idea.get("description", idea.get("raw_description", ""))[:200] + "...")
                     if idea.get("tags"):
                         tags_html = " ".join([f":material/label:{tag}:" for tag in idea["tags"]])
                         st.caption(tags_html)

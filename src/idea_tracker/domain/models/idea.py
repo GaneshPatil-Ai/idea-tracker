@@ -35,18 +35,13 @@ class Idea(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(200), nullable=False)
-    raw_description = Column(String(1000), nullable=False)
-    structured_description = Column(String(2000), nullable=True)
+    description = Column(String(1000), nullable=True)
+    problem = Column(String(1000), nullable=True)
+    opportunity = Column(String(1000), nullable=True)
     status = Column(SQLEnum(StatusEnum), default=StatusEnum.INBOX, nullable=False)
-    source = Column(SQLEnum(SourceEnum), default=SourceEnum.MANUAL, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    last_reviewed_at = Column(DateTime, nullable=True)
+    next_action = Column(String(500), nullable=True)
+    created_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, nullable=True)
 
     tags = relationship("Tag", secondary="idea_tags", back_populates="ideas")
     notes = relationship("Note", back_populates="idea", cascade="all, delete-orphan")

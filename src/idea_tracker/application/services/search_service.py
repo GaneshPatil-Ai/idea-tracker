@@ -63,7 +63,7 @@ class SearchService:
         """Exact keyword match search."""
         ideas = (
             self.db.query(Idea)
-            .filter(or_(Idea.title.ilike(f"%{query}%"), Idea.raw_description.ilike(f"%{query}%")))
+            .filter(or_(Idea.title.ilike(f"%{query}%"), Idea.description.ilike(f"%{query}%")))
             .order_by(Idea.created_at.desc())
             .limit(limit)
             .offset(offset)
