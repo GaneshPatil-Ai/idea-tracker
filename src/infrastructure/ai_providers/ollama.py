@@ -1,10 +1,16 @@
 import httpx
 import json
+import os
 from .base import AIProvider
 
 class OllamaProvider(AIProvider):
     def __init__(self, base_url: str, model: str):
-        self.client = httpx.AsyncClient(base_url=base_url)
+        # For Omniroute / OpenAI-compatible endpoints
+        api_key = os.getenv("OPENAI_API_KEY", "sk-5a6cfd56f4f61667-056140-86cbb53f")
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+        self.client = httpx.AsyncClient(base_url=base_url, headers=headers)
         self.model = model
 
     async def structure_idea(self, raw_text: str) -> dict:
